@@ -26,6 +26,12 @@ public sealed record StageDocument(Stage Stage, string? Title)
     {
         ArgumentNullException.ThrowIfNull(json);
 
+        // RFC 8259 lets a parser skip a byte order mark; Encoding.UTF8.GetString keeps one from a file saved with it.
+        if (json.StartsWith('\uFEFF'))
+        {
+            json = json[1..];
+        }
+
         // Encoding first replaces lone surrogates, which JsonDocument would reject with an ArgumentException.
         var utf8 = Encoding.UTF8.GetBytes(json);
         if (utf8.Length > MaxBytes)

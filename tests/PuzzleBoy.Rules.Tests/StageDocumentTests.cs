@@ -130,6 +130,10 @@ public sealed class StageDocumentTests
         Assert.Equal("This isn't a stage file: it holds text that isn't valid Unicode.", Reject(Json.Replace(from, to, StringComparison.Ordinal)));
 
     [Fact]
+    public void A_byte_order_mark_is_ignored() =>
+        Assert.Equal("First Push", StageDocument.Parse("\uFEFF" + Json).Title);
+
+    [Fact]
     public void Nesting_too_deep_is_rejected() =>
         Assert.Equal("This isn't a stage file: it isn't valid JSON (line 1).", Reject(Edit(j => j["extra"] = JsonNode.Parse(new string('[', 50) + new string(']', 50)))));
 
