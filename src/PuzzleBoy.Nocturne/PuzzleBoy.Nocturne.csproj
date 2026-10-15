@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>PuzzleBoy.Nocturne</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Reads the player's own bundles at runtime; nothing here holds or embeds game data. -->
+  <ItemGroup>
+    <PackageReference Include="AssetsTools.NET" />
+    <PackageReference Include="Fmod5Sharp" />
+    <PackageReference Include="NVorbis" />
+    <!-- shortcut: MonoGame only for the math types the decoded records carry (Vector3, Quaternion, Matrix, Rectangle),
+         so the reading code moved from puzzle-boy unchanged; nothing here draws or plays. Switch to System.Numerics
+         if a consumer without MonoGame appears. -->
+    <PackageReference Include="MonoGame.Framework.DesktopGL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="PuzzleBoy.Nocturne.Tests" />
+  </ItemGroup>
+
+</Project>

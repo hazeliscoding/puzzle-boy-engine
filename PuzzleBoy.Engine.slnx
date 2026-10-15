@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/PuzzleBoy.Nocturne/PuzzleBoy.Nocturne.csproj" />
     <Project Path="src/PuzzleBoy.Rules/PuzzleBoy.Rules.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/PuzzleBoy.Nocturne.Tests/PuzzleBoy.Nocturne.Tests.csproj" />
     <Project Path="tests/PuzzleBoy.Rules.Tests/PuzzleBoy.Rules.Tests.csproj" />
   </Folder>
 </Solution>
