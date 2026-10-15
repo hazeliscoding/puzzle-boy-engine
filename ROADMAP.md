@@ -27,12 +27,14 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, shared by th
 
 **Done when** every rule test that used to run in puzzle-boy runs here, without MonoGame, a game install or Nocturne data, and every CI gate passes.
 
-## E2: Authoring model (started 2026.10.15)
+## E2: Authoring model (done 2026.10.15)
 
 - [x] An authorable stage: build one in code, validate it with messages a player can act on, and write it as an original-layout file.
   - Every drawn test stage also goes through `StageBuilder.From` and back to raw cells, so the builder keeps every stage the rules tests use.
 - [x] A portable JSON stage format, documented in `docs/stage-json.md`, that rejects every malformed input with one exception type.
-- [ ] Regression tests that pin the behavior consumers rely on.
+- [x] Regression tests that pin the behavior consumers rely on.
+  - The same stage built in code, drawn through `Stage.Parse`, written with `ToFile` and read from JSON leaves identical boards after each of 28 inputs that walk, push, fall, turn, switch, undo, refuse and retry.
+  - `Board.Switch()` stays public, `Stage.Parse` still accepts stages the builder rejects and still throws `InvalidDataException`, and the exported types are pinned by name.
 
 **Done when** a stage built in code, parsed from bytes or read from JSON plays the same, and every validation rule and malformed input has a test.
 
