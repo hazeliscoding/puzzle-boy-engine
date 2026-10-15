@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>PuzzleBoy.Rendering</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Draws and plays what PuzzleBoy.Nocturne decodes from the player's install. No content pipeline. -->
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PuzzleBoy.Nocturne\PuzzleBoy.Nocturne.csproj" />
+    <ProjectReference Include="..\PuzzleBoy.Rules\PuzzleBoy.Rules.csproj" />
+  </ItemGroup>
+
+</Project>

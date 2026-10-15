@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PuzzleBoy.Rendering.Tests</RootNamespace>
+    <!-- Test names read as sentences; they don't need doc comments too. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\PuzzleBoy.Rendering\PuzzleBoy.Rendering.csproj" />
+  </ItemGroup>
+
+  <!-- The timing tests draw their boards with the rules tests' helper. -->
+  <ItemGroup>
+    <Compile Include="..\PuzzleBoy.Rules.Tests\Ascii.cs" Link="Ascii.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>
