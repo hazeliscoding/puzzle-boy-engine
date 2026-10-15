@@ -9,7 +9,7 @@ namespace PuzzleBoy.Rendering;
 /// Draws Jack-o'-Lantern the way re/m3-jack.md fits the HD look with built-in effects: each material's texture times a
 /// toon ramp from <c>tone2</c>, no outline, a shadow that subtracts from the floor and a generated lantern glow.
 /// </summary>
-internal sealed class CharacterView : IDisposable
+public sealed class CharacterView : IDisposable
 {
     // The ramp is tone2's band 4, Unity row 36 from the bottom. INFERRED from footage, like the light and the 1.1x
     // brightness: DualTextureEffect doubles texture x ramp, so 0.55 gives 1.1.

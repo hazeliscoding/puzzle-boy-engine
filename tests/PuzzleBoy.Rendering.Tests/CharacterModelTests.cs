@@ -13,6 +13,10 @@ public sealed class CharacterModelTests
         [new("root", -1, Vector3.Zero, Quaternion.Identity, Vector3.One), new("placed", 0, Vector3.Zero, Quaternion.Identity, Vector3.One)],
         Placed: 1, Fire: 1, meshes, new Dictionary<string, TextureData>(), NoCurves, [], LoopTicks: 80, Ramp: new TextureData(1, 1, [[0, 0, 0, 0]]));
 
+    [Fact]
+    public void A_game_can_draw_the_character_without_a_board() =>
+        Assert.True(typeof(CharacterView).IsPublic, "Community Edition's Classic title draws the Jack-o'-Lantern on its own");
+
     [Theory]
     [InlineData(Direction.PlusY)]
     [InlineData(Direction.PlusX)]
