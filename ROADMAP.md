@@ -9,6 +9,7 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, and the libr
 - **`Board.Switch()` stays.** The original has no switch, but Community's multi-character stages need it. The preservation port no longer calls it.
 - **`Stage.Parse` stays lenient.** It accepts anything the original's files hold, including group ids that mix blocks and swivels. Validation applies only to stages authored for Community.
 - **Consumers pin a commit.** Both games use this repo as a git submodule at `external/puzzle-boy-engine` with a project reference. No NuGet package for now.
+- **Versioning is the commit SHA** (2026.10.15). No version numbers, tags or releases. Both games pin the same SHA and bump together, even for a docs-only commit; puzzle-boy's `ROADMAP.md` ledger records it.
 - **CI on three systems.** The rules have no platform code, and CI proves it on Linux, Windows and macOS.
 
 ## Decisions (2026.10.15)
@@ -42,14 +43,14 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, and the libr
 
 **Done when** a stage built in code, parsed from bytes or read from JSON plays the same, and every validation rule and malformed input has a test.
 
-## E3: Shared classic presentation
+## E3: Shared classic presentation (done 2026.10.15)
 
 - [x] `PuzzleBoy.Nocturne`: `GameInstall` and its partials, `UnityFormats`, `TextureDecoder` and the decoded records, with their tests (19 cases).
 - [x] `PuzzleBoy.Rendering`: `BoardView`, `CharacterView`, `CharacterModel`, `ViewCamera`, `MoveAnimation` and `Sounds`, with their tests (17 cases).
 - [x] Central package versions match puzzle-boy's, including the `Microsoft.Bcl.Memory` pin.
 - [x] puzzle-boy uses both libraries and drops its copies, with no change to what it shows or when.
-- [ ] Community Edition's Classic theme uses both libraries instead of its own copy of the install reader.
-- [ ] CI passes on GitHub, once this repo is published.
+- [x] Community Edition's Classic theme uses both libraries instead of its own copy of the install reader. Community pinned `03ee710` and deleted its copy (its ROADMAP, C6); its CI passed on GitHub with both libraries (run 38761861026).
+- [x] CI passes on GitHub: build, test and format on Linux, Windows and macOS and the guard on Linux (run 38755360126, at `03ee710`).
 
 **Done when** both games build against these libraries with no copy of the moved code left in either, and every gate passes on all three systems.
 

@@ -5,7 +5,7 @@
 `PuzzleBoy.Rules` is the rules of the Puzzle Boy minigame from *Shin Megami Tensei III Nocturne HD Remaster*: walking, block pushes, swivel turns, holes, the goal, undo and retry. It has no graphics, no audio and no file access, so tests drive it with plain bytes. Two games build on it:
 
 - [puzzle-boy](https://github.com/hazeliscoding/puzzle-boy), a faithful preservation port that reads the original 20 stages from your own copy of Nocturne.
-- [puzzle-boy-community](https://github.com/hazeliscoding/puzzle-boy-community), a standalone puzzle game with its own stages that needs no Nocturne.
+- [puzzle-boy-community](https://github.com/hazeliscoding/puzzle-boy-community), the Nocturne minigame expanded, with new stages and an editor. Its Classic theme comes from your own copy, and it plays out of the box with its bundled Default theme.
 
 `PuzzleBoy.Nocturne` and `PuzzleBoy.Rendering` are the preservation port's asset reading and classic presentation, shared so both games show the original's board, Jack-o'-Lantern, camera, timing and sound the same way. They read the player's installed copy at runtime.
 
@@ -82,6 +82,10 @@ git commit -m "build: bump engine to <short-sha>"
 ```
 
 List the engine commit subjects in the commit body. A consumer never points at uncommitted engine work or a floating `main`. CI checks out with `submodules: recursive`.
+
+## Versioning
+
+There are no version numbers, tags or packages. A consumer pins a commit SHA, and both games pin the same one: bump them together, even for a docs-only engine commit. `git submodule status` in either game shows its pin, and puzzle-boy's `ROADMAP.md` keeps the cross-repo ledger.
 
 ## Tests
 
