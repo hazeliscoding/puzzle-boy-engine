@@ -73,7 +73,11 @@ public sealed record StageDocument(Stage Stage, string? Title)
     }
 
     /// <summary>The stage as indented JSON with LF line endings, which <see cref="Parse"/> reads back.</summary>
-    /// <exception cref="InvalidOperationException">A group is above 35, the most the format can write.</exception>
+    /// <remarks>A lone surrogate in the title is written as U+FFFD.</remarks>
+    /// <exception cref="InvalidOperationException">
+    /// A group is above 35, the most the format can write, or the title makes the file larger than the 64 KiB
+    /// <see cref="Parse"/> accepts.
+    /// </exception>
     public string ToJson()
     {
         var tiles = new List<string>();
@@ -114,6 +118,12 @@ public sealed record StageDocument(Stage Stage, string? Title)
             WriteRows(writer, "tiles", tiles);
             WriteRows(writer, "groups", groups);
             writer.WriteEndObject();
+        }
+
+        // The trailing newline counts toward the limit too.
+        if (stream.Length + 1 > MaxBytes)
+        {
+            throw new InvalidOperationException($"The title makes this stage larger than {MaxBytes / 1024} KiB, the most a stage file can hold.");
         }
 
         return Encoding.UTF8.GetString(stream.ToArray()) + "\n";

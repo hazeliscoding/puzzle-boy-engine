@@ -107,6 +107,10 @@ public sealed class StageDocumentTests
         Assert.Throws<InvalidOperationException>(() => new StageDocument(builder.Build(), null).ToJson());
     }
 
+    [Fact]
+    public void ToJson_refuses_a_title_too_long_to_read_back() =>
+        Assert.Throws<InvalidOperationException>(() => new StageDocument(Stage(), new string('x', 64 * 1024)).ToJson());
+
     [Theory]
     [InlineData("", "This isn't a stage file: it isn't valid JSON (line 1).")]
     [InlineData("{\n\"format\": ", "This isn't a stage file: it isn't valid JSON (line 2).")]
