@@ -25,6 +25,15 @@ The rules are instant and time belongs to the game. `Board.Step` applies a whole
 - `Board` is a stage in play. `Step(Direction)` walks, pushes or turns and returns a `StepResult`; `Undo()`, `Retry()` and `Switch()` do what they say. `Characters`, `Active`, `IsCleared`, `CanUndo` and `LastMove` describe the state.
 - `Direction`, `Directions`, `StepResult`, `Move` and `Character` are the values those members use.
 
+For authoring new stages:
+
+- `Tile` is one cell as an editor shows it: a `CellKind`, a group and whether a block or swivel part rests on a hole. `ToCell()` and `Tile.FromCell(ushort)` convert to and from raw cells.
+- `StageBuilder` is a stage being made: a 20×20 tile grid that starts as all wall, a `Goal` and 1–4 `Characters`. `Validate()` lists every `StageProblem`, each a sentence for the player with the cell it's about; `Build()` returns the `Stage` or throws a `StageFormatException` carrying them all. `StageBuilder.From(Stage)` starts from an existing stage.
+- `Stage.ToFile()` writes a stage in the original's 828-byte layout, which `Stage.Parse` reads back.
+- `StageDocument` reads and writes the portable JSON format in [docs/stage-json.md](docs/stage-json.md). `Parse` throws only `StageFormatException`, whatever the input.
+
+`Stage.Parse` stays lenient, as the original's files need; only authored stages are validated.
+
 The rules follow the original game's code as read in the preservation port's research (puzzle-boy's `ROADMAP.md`, "M0 findings"), with three documented differences none of the original's stages can show.
 
 ## Use it from a game
