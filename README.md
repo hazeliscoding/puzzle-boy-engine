@@ -51,6 +51,7 @@ To draw and play it (`PuzzleBoy.Rendering`), at 30 ticks a second:
 - `ViewCamera` is the follow camera: `TurnLeft`, `TurnRight`, `ToggleAngle`, `Quake`, `Tick`, `DirectionFor(screen)` and `View(pivot)`.
 - `Sounds(clips)` takes `ReadSounds("pazzleboy")`; `Play(n)` plays effect `JYAKYO02_SE<n>` and `StartMusic()` loops the music.
 - `BoardView.Upload(device, texture)` puts any `TextureData` on the GPU with its mip levels.
+- `Hud(device, sheets, text)` draws the original's interface: `Draw(HudState)` for the stage counter, COMPLETE!, UNDO, scroll arrows and controls bar, `DrawMenu(Menu)` for the □ menu, `DrawHelp()` and `DrawDialogue(Dialogue)`; `TextRenderer.Bake` renders a line in the original's font.
 
 puzzle-boy's `PuzzleBoyGame` shows the wiring: the pivot, projection, facing and which effect plays when.
 
@@ -100,7 +101,7 @@ CI runs them on Linux, Windows and macOS. No test needs the game installed.
 
 ## Origin
 
-The rules and their tests were copied from [hazeliscoding/puzzle-boy](https://github.com/hazeliscoding/puzzle-boy) at commit `410fc89` (the rules are unchanged at `3a06920`, where the split started). `PuzzleBoy.Nocturne` and `PuzzleBoy.Rendering` moved from puzzle-boy's `src/PuzzleBoy` at `c3b0382`, changed only in namespace, visibility and citations. Git history was not carried over, so `git blame` here starts at the copy. The history of every rule and every drawing decision, and the research behind them, lives in puzzle-boy.
+The rules and their tests were copied from [hazeliscoding/puzzle-boy](https://github.com/hazeliscoding/puzzle-boy) at commit `410fc89` (the rules are unchanged at `3a06920`, where the split started). `PuzzleBoy.Nocturne` and `PuzzleBoy.Rendering` moved from puzzle-boy's `src/PuzzleBoy` at `c3b0382` (the HUD, menus and text at `83c9565`), changed only in namespace, visibility and citations. Git history was not carried over, so `git blame` here starts at the copy. The history of every rule and every drawing decision, and the research behind them, lives in puzzle-boy.
 
 ## License
 

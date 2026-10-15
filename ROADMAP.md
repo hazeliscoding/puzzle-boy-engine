@@ -19,9 +19,10 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, and the libr
 - **Validation rules** (authored stages only): one goal on floor; one to four characters, each on floor, off the goal and on its own cell; a group is all blocks or all one swivel; a block group touches side to side; a swivel has one center and at least one arm, each in line with the center with only its own arms between. Plain tiles have no group and no hole flag under them. Messages are full sentences for the player and point at a cell.
 - **Stage JSON, schema version 1** (`docs/stage-json.md`). Tiles and groups are 20 strings of 20 characters each, so a file reads like a drawing; coordinates are `[x, y]` with row 0 first, like the tests. Groups 1–35 only. At most 64 KiB, strict JSON, no duplicate properties, nesting at most 8 deep, unknown properties ignored. Every malformed input fails with `StageFormatException`; a property-by-property sweep of every JSON value kind checks it.
 - **Shared, not copied** (the owner's request: Community Edition gets a Classic Nocturne theme built from the preservation port's own code). Bundle reading moves from puzzle-boy into `PuzzleBoy.Nocturne` and the board, character, camera, timing and sound code into `PuzzleBoy.Rendering`, so both games draw the original the same way. `PuzzleBoy.Rules` stays headless with no new dependencies.
-- **Moved verbatim.** Only the namespace, `internal` to `public` where a game needs it, and citations changed, so the port's look and timing can't drift. puzzle-boy's `ROADMAP.md` has the file-by-file diff evidence. HUD, dialogue, menus, `TextRenderer` and the stage order stay in puzzle-boy.
+- **Moved verbatim.** Only the namespace, `internal` to `public` where a game needs it, and citations changed, so the port's look and timing can't drift. puzzle-boy's `ROADMAP.md` has the file-by-file diff evidence. HUD, dialogue, menus, `TextRenderer` and the stage order stay in puzzle-boy (the first four moved later; see the next decision).
 - **`PuzzleBoy.Nocturne` references MonoGame for math types only.** The decoded records carry `Vector3`, `Quaternion`, `Matrix`, `Rectangle` and `Vector4`, and changing them to `System.Numerics` would rewrite stable code. Nothing in it draws or plays. Revisit if a consumer without MonoGame appears.
 - **The font records live with `ReadText`.** `FontGlyph`, `FontData` and `TextMaterial` moved out of puzzle-boy's `TextRenderer.cs` because `GameInstall.ReadText` builds them; `TextRenderer` itself stays in puzzle-boy.
+- **The original's interface is shared too** (the owner's request: Community Edition's Classic theme shows the original's HUD, controls and menus). `Hud` with `UiLayout`, `UiSheets`, `HudState` and `BarSet`, `TextRenderer` and `BakedText`, `Menu`, `MenuItem` and `KeyRepeat`, and `Dialogue` move from puzzle-boy at `83c9565` into `PuzzleBoy.Rendering`, moved verbatim the same way. `Dialogue` comes along because `Hud.DrawDialogue` takes one; it is plain logic and holds no text, only the original's string ids. The stage order, input and stage flow stay in each game.
 
 ## E1: Extract the rules (done 2026.10.14)
 
@@ -54,6 +55,15 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, and the libr
 
 **Done when** both games build against these libraries with no copy of the moved code left in either, and every gate passes on all three systems.
 
+## E4: Shared original UI (2026.10.15)
+
+- [x] `PuzzleBoy.Rendering`: `Hud`, `UiLayout`, `UiSheets`, `HudState`, `BarSet`, `TextRenderer`, `BakedText`, `Menu`, `MenuItem`, `KeyRepeat` and `Dialogue`, with their tests (28 cases: Hud 10, TextRenderer 10, Menu 4, Dialogue 4).
+- [x] CI passes on GitHub with them (run 38777842184, at `842ed69`).
+- [ ] puzzle-boy uses them and drops its copies, with no change to what it shows or when (its ROADMAP, M7).
+- [ ] Community Edition's Classic theme draws the original's HUD, menus and text with them (its ROADMAP, C7).
+
+**Done when** both games draw the original's interface with this code, no copy is left in either, and every gate passes on all three systems.
+
 ## Later
 
 - A NuGet package, if a third consumer appears.
@@ -61,7 +71,7 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, and the libr
 
 ## Not planned
 
-- Input, menus, HUD, dialogue and stage flow. They belong to each game.
+- Input and stage flow. They belong to each game; the shared HUD, menus and dialogue only draw and time what a game tells them.
 - Fetching or bundling game files of any kind. The libraries only read what the player points them at.
 - Any Atlus data, including original stage layouts converted to JSON.
 - Behavior the original game doesn't have, beyond what Community needs and the documented differences.

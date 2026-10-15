@@ -26,14 +26,14 @@ These are the working rules for agents in this repo. Puzzle Boy Engine is the he
 
 - `src/PuzzleBoy.Rules`: stage parsing (`Stage`, `Cell`) and the rules (`Board`). No MonoGame, no file I/O and no dependencies, so the tests can drive it with plain bytes. Keep it that way.
 - `src/PuzzleBoy.Nocturne`: `GameInstall` finds the install and reads its bundles with AssetsTools.NET; `UnityFormats` and `TextureDecoder` decode meshes, animation and textures; the records (`TextureData`, `SoundData`, `CharacterData`, `TextData`, …) carry the result. It uses MonoGame for math types only.
-- `src/PuzzleBoy.Rendering`: MonoGame drawing and sound: `BoardView`, `CharacterView`, `CharacterModel`, `ViewCamera`, `MoveAnimation`, `Sounds`. Its look and timing are the preservation port's; change them only with evidence recorded in puzzle-boy's `ROADMAP.md`.
+- `src/PuzzleBoy.Rendering`: MonoGame drawing and sound: `BoardView`, `CharacterView`, `CharacterModel`, `ViewCamera`, `MoveAnimation`, `Sounds`, and the original's interface: `Hud`, `TextRenderer`, `Menu`, `Dialogue`. Its look and timing are the preservation port's; change them only with evidence recorded in puzzle-boy's `ROADMAP.md`.
 - `tests/PuzzleBoy.Rules.Tests`: xunit.v3 on Microsoft Testing Platform. Rules tests draw handmade stages as text with `Ascii.cs`; its summary has the legend. A rule change starts with a drawing of the case. Test names read as sentences.
 - `tests/PuzzleBoy.Nocturne.Tests` and `tests/PuzzleBoy.Rendering.Tests`: the same, on made-up bytes and models. The rendering tests share `Ascii.cs` by link.
 
 ## Consumers
 
 - puzzle-boy and puzzle-boy-community pin this repo as a submodule at `external/puzzle-boy-engine`. After an engine commit they need to bump their pin (`build: bump engine to <short-sha>`); README.md has the steps.
-- What belongs to one game stays there: the original 20-file order, HUD, dialogue and menus in puzzle-boy; the bonus order, stage catalogs, themes, classic packs and menus in Community; input and stage flow in each game. Bundle reading and the classic board and character drawing are shared here.
+- What belongs to one game stays there: the original 20-file order and when the dialogue plays in puzzle-boy; the bonus order, stage catalogs, themes, classic packs and menus in Community; input and stage flow in each game. Bundle reading and the classic board, character, HUD, menu and text drawing are shared here.
 
 ## Working style
 
