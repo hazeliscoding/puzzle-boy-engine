@@ -20,7 +20,7 @@ public sealed class Stage
 
     private readonly ushort[] _cells;
 
-    private Stage(IReadOnlyList<(int Slot, int X, int Y)> characters, (int X, int Y) goal, ushort[] cells)
+    internal Stage(IReadOnlyList<(int Slot, int X, int Y)> characters, (int X, int Y) goal, ushort[] cells)
     {
         Characters = characters;
         Goal = goal;
@@ -77,6 +77,35 @@ public sealed class Stage
         }
 
         return new Stage(characters, ReadPosition(file, GoalOffset), cells);
+    }
+
+    /// <summary>
+    /// The stage in the original's 828-byte layout: the character count, the enable bytes, the starts, the goal and the
+    /// grid. <see cref="Parse"/> reads it back with the same characters, goal and cells.
+    /// </summary>
+    public byte[] ToFile()
+    {
+        var file = new byte[FileSize];
+        BinaryPrimitives.WriteInt32LittleEndian(file, Characters.Count);
+        foreach (var (slot, x, y) in Characters)
+        {
+            file[4 + slot] = 1;
+            WritePosition(file, 8 + (slot * 4), x, y);
+        }
+
+        WritePosition(file, GoalOffset, Goal.X, Goal.Y);
+        for (var i = 0; i < _cells.Length; i++)
+        {
+            BinaryPrimitives.WriteUInt16LittleEndian(file.AsSpan(GridOffset + (i * 2)), _cells[i]);
+        }
+
+        return file;
+    }
+
+    private static void WritePosition(byte[] file, int offset, int x, int y)
+    {
+        BinaryPrimitives.WriteInt16LittleEndian(file.AsSpan(offset), (short)x);
+        BinaryPrimitives.WriteInt16LittleEndian(file.AsSpan(offset + 2), (short)y);
     }
 
     private static (int X, int Y) ReadPosition(ReadOnlySpan<byte> file, int offset)

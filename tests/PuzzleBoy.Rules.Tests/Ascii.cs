@@ -71,8 +71,13 @@ internal static class Ascii
             BinaryPrimitives.WriteUInt16LittleEndian(file.AsSpan(28 + (i * 2)), grid[i]);
         }
 
-        return Rules.Stage.Parse(file);
+        var stage = Rules.Stage.Parse(file);
+        KeptByBuilder(stage);
+        return stage;
     }
+
+    /// <summary>A builder made from <paramref name="drawing"/>'s stage, to change before validating or building.</summary>
+    public static StageBuilder Builder(string drawing) => StageBuilder.From(Stage(drawing));
 
     /// <summary>Draws the board the way <see cref="Stage(string)"/> reads it, over the same width and height as <paramref name="like"/>.</summary>
     public static string Draw(Board board, string like)
@@ -94,6 +99,21 @@ internal static class Ascii
         }
 
         return string.Join('\n', lines);
+    }
+
+    // Every drawn stage in every test also proves StageBuilder.From and Tile keep it whole.
+    private static void KeptByBuilder(Stage stage)
+    {
+        var builder = StageBuilder.From(stage);
+        Assert.Equal(stage.Goal, builder.Goal);
+        Assert.Equal(stage.Characters.Select(c => (c.X, c.Y)), builder.Characters);
+        for (var y = 0; y < Rules.Stage.Height; y++)
+        {
+            for (var x = 0; x < Rules.Stage.Width; x++)
+            {
+                Assert.Equal(stage[x, y], builder[x, y].ToCell());
+            }
+        }
     }
 
     private static ushort CellFor(char c) => c switch

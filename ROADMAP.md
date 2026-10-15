@@ -11,6 +11,13 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, shared by th
 - **Consumers pin a commit.** Both games use this repo as a git submodule at `external/puzzle-boy-engine` with a project reference. No NuGet package for now.
 - **CI on three systems.** The rules have no platform code, and CI proves it on Linux, Windows and macOS.
 
+## Decisions (2026.10.15)
+
+- **Authoring API.** `Tile`, `StageProblem`, `StageFormatException`, `StageBuilder`, `Stage.ToFile()` and `StageDocument` are new and additive; nothing existing changed meaning. A builder starts as all wall, and characters take slots 0 up in order, so `StageBuilder.From` closes the gaps of a stage that skips slots.
+- **`StageFormatException` derives from `FormatException`.** The plan was `InvalidDataException`, which `Stage.Parse` throws, but that class is sealed. A caller that wants both catches both.
+- **Validation rules** (authored stages only): one goal on floor; one to four characters, each on floor, off the goal and on its own cell; a group is all blocks or all one swivel; a block group touches side to side; a swivel has one center and at least one arm, each in line with the center with only its own arms between. Plain tiles have no group and no hole flag under them. Messages are full sentences for the player and point at a cell.
+- **Stage JSON, schema version 1** (`docs/stage-json.md`). Tiles and groups are 20 strings of 20 characters each, so a file reads like a drawing; coordinates are `[x, y]` with row 0 first, like the tests. Groups 1–35 only. At most 64 KiB, strict JSON, no duplicate properties, nesting at most 8 deep, unknown properties ignored. Every malformed input fails with `StageFormatException`; a property-by-property sweep of every JSON value kind checks it.
+
 ## E1: Extract the rules (done 2026.10.14)
 
 - [x] Copy `PuzzleBoy.Rules` without `PlayOrder`, and the rule-only tests, from puzzle-boy.
@@ -20,10 +27,11 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, shared by th
 
 **Done when** every rule test that used to run in puzzle-boy runs here, without MonoGame, a game install or Nocturne data, and every CI gate passes.
 
-## E2: Authoring model
+## E2: Authoring model (started 2026.10.15)
 
-- [ ] An authorable stage: build one in code, validate it with messages a player can act on, and write it as an original-layout file.
-- [ ] A portable JSON stage format, documented in `docs/stage-json.md`, that rejects every malformed input with one exception type.
+- [x] An authorable stage: build one in code, validate it with messages a player can act on, and write it as an original-layout file.
+  - Every drawn test stage also goes through `StageBuilder.From` and back to raw cells, so the builder keeps every stage the rules tests use.
+- [x] A portable JSON stage format, documented in `docs/stage-json.md`, that rejects every malformed input with one exception type.
 - [ ] Regression tests that pin the behavior consumers rely on.
 
 **Done when** a stage built in code, parsed from bytes or read from JSON plays the same, and every validation rule and malformed input has a test.
