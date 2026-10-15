@@ -5,6 +5,9 @@ artifacts/
 TestResults/
 *.binlog
 
+# Local research (see scripts/check-no-game-data.sh)
+re/
+
 # Editors
 .vs/
 .idea/
