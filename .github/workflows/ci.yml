@@ -25,7 +25,7 @@ jobs:
           scripts/check-no-game-data.sh
 
   build:
-    # The rules are headless, so they must behave the same on every system the games ship for.
+    # The rules are headless and the shared libraries are cross-platform; both must behave the same on every system the games ship for.
     strategy:
       fail-fast: false
       matrix:

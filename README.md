@@ -1,20 +1,24 @@
 # Puzzle Boy Engine
 
-**Reusable headless puzzle rules and stage authoring engine. Not a playable game.**
+**Reusable headless puzzle rules and stage authoring engine, plus the libraries both games use to read and draw the player's own Nocturne files. Not a playable game.**
 
 `PuzzleBoy.Rules` is the rules of the Puzzle Boy minigame from *Shin Megami Tensei III Nocturne HD Remaster*: walking, block pushes, swivel turns, holes, the goal, undo and retry. It has no graphics, no audio and no file access, so tests drive it with plain bytes. Two games build on it:
 
 - [puzzle-boy](https://github.com/hazeliscoding/puzzle-boy), a faithful preservation port that reads the original 20 stages from your own copy of Nocturne.
 - [puzzle-boy-community](https://github.com/hazeliscoding/puzzle-boy-community), a standalone puzzle game with its own stages that needs no Nocturne.
 
-This repository contains no Atlus code or data. Every stage in it is handmade.
+`PuzzleBoy.Nocturne` and `PuzzleBoy.Rendering` are the preservation port's asset reading and classic presentation, shared so both games show the original's board, Jack-o'-Lantern, camera, timing and sound the same way. They read the player's installed copy at runtime.
+
+This repository contains no Atlus code or data, and never will. Every stage and every test asset in it is handmade.
 
 ## Architecture
 
-One library, one test project, .NET 10:
+Three libraries, each with a test project, .NET 10:
 
 - `src/PuzzleBoy.Rules`: the rules, namespace `PuzzleBoy.Rules`. No dependencies.
-- `tests/PuzzleBoy.Rules.Tests`: xunit.v3 tests on handmade stages drawn as text.
+- `src/PuzzleBoy.Nocturne`: finds the player's install and decodes its Unity bundles (AssetsTools.NET, Fmod5Sharp, NVorbis). It draws nothing; it uses MonoGame only for the math types its records carry.
+- `src/PuzzleBoy.Rendering`: MonoGame (DesktopGL) drawing and sound for what `PuzzleBoy.Nocturne` decodes, on top of the rules.
+- `tests/PuzzleBoy.*.Tests`: xunit.v3 tests on handmade stages drawn as text and made-up bytes. None needs the game.
 
 The rules are instant and time belongs to the game. `Board.Step` applies a whole move at once and records what moved in `LastMove`; a game animates that afterwards.
 
@@ -34,6 +38,22 @@ For authoring new stages:
 
 `Stage.Parse` stays lenient, as the original's files need; only authored stages are validated.
 
+To read the player's copy (`PuzzleBoy.Nocturne`):
+
+- `GameInstall.At(folder)` takes the folder that holds `smt3hd_Data` (null when its `pazzleboy` bundle is missing); `GameInstall.Find()` searches every Steam library. Bundles are read from `smt3hd_Data/StreamingAssets/PC/<bundle>`.
+- `ReadTextAssets(bundle)` returns TextAssets by name (stage files are `pazzleboy`'s). `ReadTexture` and `ReadTextures` decode Texture2Ds to `TextureData` (RGBA, Unity's bottom-up rows, every mip level). `ReadSounds(bundle)` decodes AudioClips to 16-bit PCM `SoundData`. `ReadCharacter(ramp)` reads Jack-o'-Lantern as `CharacterData`. `ReadText()` reads the font (`FontData`), its `TextMaterial`s and the English strings as `TextData`. Each throws `InvalidDataException` for data it doesn't read.
+
+To draw and play it (`PuzzleBoy.Rendering`), at 30 ticks a second:
+
+- `BoardView(device, atlas, background, character)` uploads `sample1` from `pazzleboy`, `BG_pzl` from `common` and the character. `Draw(board, animation, view, projection, ticks, models, viewYaw)` draws the backdrop, the board, the posed models, and the glass and goal over them.
+- `CharacterModel(data)` is one Jack; `Pose(tick, x, y, yaw)` places him on a cell, fractional mid-step, before each draw.
+- `MoveAnimation(board.LastMove, from)` replays a step with the original's timing: call `Tick()` each tick, read `Done`, `FallStarts`, `FallEnds` and `ArrivesAt(goal)`, and place characters with `MoveAnimation.Where`.
+- `ViewCamera` is the follow camera: `TurnLeft`, `TurnRight`, `ToggleAngle`, `Quake`, `Tick`, `DirectionFor(screen)` and `View(pivot)`.
+- `Sounds(clips)` takes `ReadSounds("pazzleboy")`; `Play(n)` plays effect `JYAKYO02_SE<n>` and `StartMusic()` loops the music.
+- `BoardView.Upload(device, texture)` puts any `TextureData` on the GPU with its mip levels.
+
+puzzle-boy's `PuzzleBoyGame` shows the wiring: the pivot, projection, facing and which effect plays when.
+
 The rules follow the original game's code as read in the preservation port's research (puzzle-boy's `ROADMAP.md`, "M0 findings"), with three documented differences none of the original's stages can show.
 
 ## Use it from a game
@@ -46,7 +66,11 @@ git submodule add https://github.com/hazeliscoding/puzzle-boy-engine.git externa
 
 ```xml
 <ProjectReference Include="..\..\external\puzzle-boy-engine\src\PuzzleBoy.Rules\PuzzleBoy.Rules.csproj" />
+<ProjectReference Include="..\..\external\puzzle-boy-engine\src\PuzzleBoy.Nocturne\PuzzleBoy.Nocturne.csproj" />
+<ProjectReference Include="..\..\external\puzzle-boy-engine\src\PuzzleBoy.Rendering\PuzzleBoy.Rendering.csproj" />
 ```
+
+Reference only what you use: the rules alone need nothing else. A consumer's solution lists every engine project it builds, and its `Directory.Packages.props` needs the same package versions as this repo's.
 
 To move a consumer to a newer engine, commit here first, then in the consumer:
 
@@ -72,7 +96,7 @@ CI runs them on Linux, Windows and macOS. No test needs the game installed.
 
 ## Origin
 
-The code and tests were copied from [hazeliscoding/puzzle-boy](https://github.com/hazeliscoding/puzzle-boy) at commit `410fc89` (the rules are unchanged at `3a06920`, where the split started). Git history was not carried over, so `git blame` here starts at the copy. The history of every rule, and the research behind it, lives in puzzle-boy.
+The rules and their tests were copied from [hazeliscoding/puzzle-boy](https://github.com/hazeliscoding/puzzle-boy) at commit `410fc89` (the rules are unchanged at `3a06920`, where the split started). `PuzzleBoy.Nocturne` and `PuzzleBoy.Rendering` moved from puzzle-boy's `src/PuzzleBoy` at `c3b0382`, changed only in namespace, visibility and citations. Git history was not carried over, so `git blame` here starts at the copy. The history of every rule and every drawing decision, and the research behind them, lives in puzzle-boy.
 
 ## License
 
