@@ -60,8 +60,8 @@ Puzzle Boy Engine is the headless rules of the Puzzle Boy minigame, and the libr
 - [x] `PuzzleBoy.Rendering`: `Hud`, `UiLayout`, `UiSheets`, `HudState`, `BarSet`, `TextRenderer`, `BakedText`, `Menu`, `MenuItem`, `KeyRepeat` and `Dialogue`, with their tests (28 cases: Hud 10, TextRenderer 10, Menu 4, Dialogue 4).
 - [x] CI passes on GitHub with them (run 38777842184, at `842ed69`).
 - [x] `CharacterView` is public, so a game can draw the Jack-o'-Lantern without a board: Community's Classic title shows him idling where Pixel Jack stands (its ROADMAP, C7). Only its visibility changed.
-- [ ] puzzle-boy uses them and drops its copies, with no change to what it shows or when (its ROADMAP, M7).
-- [ ] Community Edition's Classic theme draws the original's HUD, menus and text with them (its ROADMAP, C7).
+- [x] puzzle-boy uses them and drops its copies, with no change to what it shows or when (its ROADMAP, M7; PR #4, merged as `6e8f426`).
+- [x] Community Edition's Classic theme draws the original's HUD, menus and text with them (its ROADMAP, C7): pinned at `e2ca4b1`, its CI passed at `3997fa6` (run 38787175198). puzzle-boy's bump to `e2ca4b1` is its PR #5.
 
 **Done when** both games draw the original's interface with this code, no copy is left in either, and every gate passes on all three systems.
 
