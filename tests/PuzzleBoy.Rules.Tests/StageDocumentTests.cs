@@ -120,6 +120,15 @@ public sealed class StageDocumentTests
     public void A_lone_surrogate_is_read_as_a_replacement_character_not_an_exception() =>
         Assert.Equal("This isn't a stage file: it should be a JSON object.", Reject("\"\uD800\""));
 
+    // JsonDocument accepts an escaped lone surrogate; reading the string later throws InvalidOperationException.
+    [Theory]
+    [InlineData("\"format\": \"puzzle-boy-stage\"", "\"format\": \"\\uD800\"")]
+    [InlineData("\"First Push\"", "\"First \\uDC00Push\"")]
+    [InlineData("\"format\":", "\"\\uD800\": 1, \"format\":")]
+    [InlineData("\"....................\"", "\"...................\\uD800\"")]
+    public void An_escaped_lone_surrogate_is_rejected(string from, string to) =>
+        Assert.Equal("This isn't a stage file: it holds text that isn't valid Unicode.", Reject(Json.Replace(from, to, StringComparison.Ordinal)));
+
     [Fact]
     public void Nesting_too_deep_is_rejected() =>
         Assert.Equal("This isn't a stage file: it isn't valid JSON (line 1).", Reject(Edit(j => j["extra"] = JsonNode.Parse(new string('[', 50) + new string(']', 50)))));

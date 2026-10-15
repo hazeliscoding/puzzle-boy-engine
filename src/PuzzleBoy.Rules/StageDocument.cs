@@ -44,11 +44,26 @@ public sealed record StageDocument(Stage Stage, string? Title)
             var where = e.LineNumber is { } line ? $" (line {line + 1})" : "";
             throw new StageFormatException($"This isn't a stage file: it isn't valid JSON{where}.");
         }
+        catch (InvalidOperationException)
+        {
+            // The duplicate-property check unescapes names, so an escaped lone surrogate in one throws here.
+            throw NotUnicode();
+        }
 
         using (document)
         {
-            return Read(document.RootElement);
+            try
+            {
+                return Read(document.RootElement);
+            }
+            catch (InvalidOperationException)
+            {
+                // JsonDocument accepts an escaped lone surrogate such as \uD800; reading that string throws.
+                throw NotUnicode();
+            }
         }
+
+        static StageFormatException NotUnicode() => new("This isn't a stage file: it holds text that isn't valid Unicode.");
     }
 
     /// <summary>The stage as indented JSON with LF line endings, which <see cref="Parse"/> reads back.</summary>
